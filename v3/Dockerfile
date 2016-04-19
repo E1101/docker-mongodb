@@ -3,8 +3,11 @@
 # | 
 # |  build specific release version of mongo by passing build time
 # |  argument that define version.
-# |  $ docker build --build-arg version=2.6.9 .
+# |  $ docker build --build-arg version=3.2 .
 # | 
+# | Config File Stored In:
+# |  /etc/mongod.conf
+# |
 # | Note: Mongo run with the "mongodb" user account.
 # |
 
@@ -13,11 +16,11 @@ FROM ubuntu:latest
 MAINTAINER Payam Naderi <naderi.payam@gmail.com>
 
 
-ARG version=2.6.9
+ARG version=3.2
 
 # Install base packages
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 && \
-    echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list && \
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927 && \
+    echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/"${version}" multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-${version}.list && \
     apt-get update && \
     apt-get install -y \
         mongodb-org=${version} \ 
@@ -34,7 +37,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 && \
     echo "mongodb-org-tools hold" | sudo dpkg --set-selections
 
 ## db data files and logs 
-VOLUME ["/var/lib/mongodb/", "/var/log/mongodb/"]
+VOLUME ["/data/db", "/var/log/mongodb/"]
 
 ## Set Environment Default Variables Override Default Behavior
 ## This Environment Will Check On run.sh
